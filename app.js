@@ -1,7 +1,7 @@
 import https from 'https';
 import express from 'express';
 import dotenv from 'dotenv';
-import { twelveDataAPI, rapidStocksAPI, polygonAPI } from './services/apiServices.js';
+import { twelveDataAPI, rapidStocksAPI, polygonAPI, newsAPI, searchAPI } from './services/apiServices.js';
 import cors from 'cors';
 
 dotenv.config();
@@ -13,7 +13,8 @@ app.use(express.json());
 app.use(cors({
     origin: ['http://localhost:3000', 'https://marketlens.brandonling.me'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
 app.get('/api/twelve/price/:symbol', async (req, res) => {
@@ -54,6 +55,28 @@ app.get('/api/polygon/aggregates/:ticker/:startDate/:endDate', async (req, res) 
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/news/finance', async (req, res) => {
+    try {
+        const data = await newsAPI.getFinanceNews();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch finance news data' });
+    }
+});
+
+app.get('/api/search', async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.status(400).json({ error: 'Query parameter is required' });
+        }
+        const data = await searchAPI.searchTicker(query);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch search results' });
     }
 });
 

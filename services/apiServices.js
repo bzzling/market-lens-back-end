@@ -66,8 +66,52 @@ const polygonAPI = {
     // Add other Polygon endpoints as needed
 };
 
+const newsAPI = {
+    getFinanceNews: async () => {
+        try {
+            const response = await axios.get(
+                `https://newsdata.io/api/1/news`,
+                {
+                    params: {
+                        apikey: process.env.NEWS_API_KEY,
+                        q: 'stocks',
+                        country: 'ca,us',
+                        language: 'en'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('News API Error:', error);
+            throw error;
+        }
+    }
+};
+
+const searchAPI = {
+    searchTicker: async (query) => {
+        try {
+            const response = await axios.get(
+                `https://financialmodelingprep.com/api/v3/search`,
+                {
+                    params: {
+                        query: query,
+                        apikey: process.env.SEARCH_API_KEY
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Search API Error:', error);
+            throw error;
+        }
+    }
+};
+
 export {
     twelveDataAPI,
     rapidStocksAPI,
-    polygonAPI
+    polygonAPI,
+    newsAPI,
+    searchAPI
 }; 
